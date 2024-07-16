@@ -1,117 +1,106 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View, Alert, ScrollView } from 'react-native';
+import Block from './Components/Block';
+import TextInputCustom from './Components/TextInputComponent'; // Rename để tránh xung đột
+import ButtonCustom from './Components/ButtonComponent'; // Rename để tránh xung đột
+import Banner from './Components/Banner';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+const App = () => {
+  const [darkTheme, setDarkTheme] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [courseName, setCourseName] = useState('');
+  const [courseTime, setCourseTime] = useState('');
+  const [address, setAddress] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const toggleTheme = () => {
+    setDarkTheme(!darkTheme);
   };
 
+  const themeStyles = darkTheme ? styles.darkTheme : styles.lightTheme;
+  const validate = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^(?:\+84|0)(?:3[2-9]|5[2689]|7[06-9]|8[1-689]|9[0-46-9])[0-9]{7}$/;
+
+    if (!name || !email || !phone || !courseName || !courseTime || !address || !contactPhone) {
+      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin.');
+      return false;
+    }
+
+    if (!emailRegex.test(email)) {
+      Alert.alert('Lỗi', 'Email không hợp lệ.');
+      return false;
+    }
+
+    if (!phoneRegex.test(phone) || !phoneRegex.test(contactPhone)) {
+      Alert.alert('Lỗi', 'Số điện thoại không hợp lệ.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = () => {
+    if (validate()) {
+      Alert.alert('Thành công', 'Đăng ký thành công!');
+    }
+  };
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <ScrollView>
+      <View style={[styles.container, themeStyles]}>
+        <Banner imageUrl={{}} />
+        <Block title="Thông Tin Cá Nhân">
+          <TextInputCustom placeholder="Họ và tên" value={name} onChangeText={setName} />
+          <TextInputCustom placeholder="Email" value={email} onChangeText={setEmail} />
+          <TextInputCustom placeholder="Số điện thoại" value={phone} onChangeText={setPhone} />
+        </Block>
+
+        <Block title="Thông Tin Khóa Học">
+          <TextInputCustom placeholder="Tên khóa học" value={courseName} onChangeText={setCourseName} />
+          <TextInputCustom placeholder="Thời gian học" value={courseTime} onChangeText={setCourseTime} />
+        </Block>
+
+        <Block title="Thông Tin Liên Hệ">
+          <TextInputCustom placeholder="Địa chỉ" value={address} onChangeText={setAddress} />
+          <TextInputCustom placeholder="Số điện thoại liên hệ" value={contactPhone} onChangeText={setContactPhone} />
+        </Block>
+
+        <ButtonCustom title="Đăng Ký" onPress={handleSubmit} />
+        <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>
+          <Text style={styles.themeToggleText}>Đổi Theme</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    padding: 20,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  logo: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'contain',
+    marginBottom: 16,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  themeToggle: {
+    marginTop: 16,
+    padding: 10,
+    backgroundColor: '#6200EE',
+    borderRadius: 10,
   },
-  highlight: {
-    fontWeight: '700',
+  themeToggleText: {
+    color: '#fff',
+    textAlign: 'center',
+  },
+  lightTheme: {
+    backgroundColor: '#fff',
+  },
+  darkTheme: {
+    backgroundColor: '#333',
   },
 });
 
